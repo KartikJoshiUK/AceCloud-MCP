@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { config } from '../config';
-import { getSessionToken, isAuthenticated } from './auth';
+import { getSessionToken } from './auth';
 import { ErrorResponse } from '../types';
 
 const api = axios.create({
-  baseURL: config.cloudUrl
+  baseURL: config.backendBaseUrl
 });
 
 api.interceptors.request.use(
@@ -30,7 +30,7 @@ api.interceptors.response.use(
 
 export async function getSecurityGroups(region: string, projectId: string) {
   try {
-    const response = await api.get('/security-groups', {
+    const response = await api.get('/cloud/security-groups', {
       params: { region, project_id: projectId },
     });
     return response.data;
@@ -41,7 +41,7 @@ export async function getSecurityGroups(region: string, projectId: string) {
 
 export async function getKeyPairs(region: string, projectId: string) {
   try {
-    const response = await api.get('/key-pairs', {
+    const response = await api.get('/cloud/key-pairs', {
       params: { region, project_id: projectId },
     });
     return response.data;
@@ -52,9 +52,18 @@ export async function getKeyPairs(region: string, projectId: string) {
 
 export async function getInstances(region: string, projectId: string) {
   try {
-    const response = await api.get('/instances', {
+    const response = await api.get('/cloud/instances', {
       params: { region, project_id: projectId },
     });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getWalletDetails() {
+  try {
+    const response = await api.get('/cloud/wallet');
     return response.data;
   } catch (error) {
     throw error;

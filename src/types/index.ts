@@ -1,6 +1,6 @@
 export interface AceCloudConfig {
   baseUrl: string;
-  cloudUrl: string;
+  backendBaseUrl: string;
   email: string;
   password: string;
 }

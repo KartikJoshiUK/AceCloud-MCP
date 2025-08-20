@@ -1,8 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { getSecurityGroups, getKeyPairs, getInstances } from "./services/api";
+import { getSecurityGroups, getKeyPairs, getInstances, getWalletDetails } from "./services/api";
 import { authenticate } from "./services/auth";
+import { createToolHandler } from "./utils/tool-helpers";
 
 export const server = new McpServer({
   name: "acecloud",
@@ -21,7 +22,6 @@ export const server = new McpServer({
   },
 });
 
-import { createToolHandler } from "./utils/tool-helpers";
 
 interface SecurityGroupParams {
   region: string;
@@ -59,6 +59,18 @@ const handleInstances = createToolHandler(async (args: SecurityGroupParams) => {
       {
         type: "text",
         text: JSON.stringify(instances),
+      },
+    ],
+  };
+});
+
+const handleWallet = createToolHandler(async () => {
+  const walletDetails = await getWalletDetails();
+  return {
+    content: [
+      {
+        type: "text",
+        text: JSON.stringify(walletDetails),
       },
     ],
   };
@@ -104,6 +116,13 @@ server.tool(
     project_id: z.string(),
   },
   handleInstances
+);
+
+server.tool(
+  "fetch-wallet-details",
+  "Fetch wallet details",
+  {},
+  handleWallet
 );
 
 server.tool(
